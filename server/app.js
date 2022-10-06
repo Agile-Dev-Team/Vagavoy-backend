@@ -6,8 +6,10 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { fileURLToPath } from "url"
 import mongoose from "mongoose"
+import passport from "passport"
 
 import indexRouter from "./routes/index.js"
+import passportConfig from "./config/passport.js"
 
 const app = express()
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -25,6 +27,10 @@ app.use(cors())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, "../public")))
+app.use(passport.initialize())
+
+// Passport config
+passportConfig(passport);
 
 app.use("/", indexRouter)
 

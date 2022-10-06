@@ -1,11 +1,12 @@
 import express from 'express'
+import passport from 'passport'
 import authController from '../controllers/authController.js'
 
 const router = express.Router()
 
 
 
-router.get('/test', async (req, res) => {
+router.get('/test', passport.authenticate('jwt', {session: false}), async (req, res) => {
   res.send("sdfasdf")
 })
 
