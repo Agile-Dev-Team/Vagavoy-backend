@@ -2,6 +2,19 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import User from '../models/user.js'
 import Joi from '@hapi/joi'
+import nodemailer from 'nodemailer'
+import mongoose from 'mongoose'
+
+import keys from '../config/key.js'
+
+// Create Transport
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: keys.emailAddress,
+    pass: keys.emailPassword,
+  }
+});
 
 const registerSchema = Joi.object({
   name: Joi.string().min(3).required(),
@@ -32,6 +45,7 @@ export const register = async (req, res) => {
   // ON PROCESS OF ADDING NEW USER
 
   const user = new User({
+    _id: new mongoose.Types.ObjectId,
     name: req.body.name,
     email: req.body.email,
     password: hashedPassword
@@ -46,6 +60,24 @@ export const register = async (req, res) => {
       res.status(400).send(error.details[0].message)
       return
     } else {
+      // Generate a verification token with the user's ID
+
+      const verificationToken = await user.generateVerificationToken();
+      console.log(verificationToken)
+      const server_port = keys.port;
+      const siteURL = keys.siteURL;
+
+      // Email the user a unique verification link
+      const url = `${siteURL}/verify/${verificationToken}`;
+      const { email } = req.body;
+      await transporter.sendMail({
+        to: email,
+        subject: 'Verify Account',
+        html: `<div style='text-align: center'>
+                <h2>You have a message from Vagavoy</h2>
+                <h3>Click <a href = '${url}' >here</a> to confirm your email.</h3>
+              </div>`
+      });
       const saveUser = await user.save()
       res.status(200).send('user created');
     }
@@ -79,7 +111,7 @@ export const login = async (req, res) => {
       }
       jwt.sign(
         payload,
-        process.env.JWT_SECRET,
+        keys.secretOrKey,
         {expiresIn: 24*3600},
         (err, token) => {
           res.json({
@@ -98,8 +130,51 @@ export const login = async (req, res) => {
   }
 }
 
+const verify = async (req, res) => {
+  const token = req.params['token'];
+
+  // Check we have an id
+  if (!token) {
+    return res.status(422).json({ 
+         message: "Missing Token" 
+    });
+  }
+
+  // Verify the token from the URL
+  let payload = null
+  try {
+      payload = jwt.verify(
+         token,
+         keys.userVerificationTokenSecret
+      );
+  } catch (err) {
+      return res.status(500).json(err);
+  }
+
+  try{
+    // Find user with matching ID
+    User.findOne({ _id: payload.ID }).then(user => {
+      if (!user) {
+        return res.status(404).json({ 
+           message: "User does not  exists" 
+        });
+      }
+      // Update user verification status to true
+      user.verified = true;
+      user.save();
+      return res.status(200).json({
+           message: "Account Verified"
+      });
+    });
+    
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+}
+
 const authController = {
   login,
-  register
+  register,
+  verify,
 }
 export default authController

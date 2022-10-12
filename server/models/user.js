@@ -1,7 +1,11 @@
 import mongoose from 'mongoose';
+import crypto from 'crypto'
+import jwt from 'jsonwebtoken'
 
 const Schema = mongoose.Schema;
+
 const userSchema = new Schema({
+  _id: mongoose.Schema.Types.ObjectId,
   name: {
     type: String,
     required: true,
@@ -23,7 +27,34 @@ const userSchema = new Schema({
   date: {
     type: Date,
     default: Date.now()
+  },
+  verified: {
+    type: Boolean,
+    default: false
   }
 });
+
+userSchema.methods.generateVerificationToken = function () {
+  const user = this;
+  const verificationToken = jwt.sign(
+      { ID: user._id },
+      process.env.USER_VERIFICATION_TOKEN_SECRET,
+      { expiresIn: "10m" }
+  );
+  return verificationToken;
+};
+
+userSchema.methods.generateResetPasswordToken = function () {
+  crypto.randomBytes(20, (err, buf) => {
+    if (err) {
+      // Prints error
+      console.log(err);
+      return;
+    }
+    
+    // Prints random bytes of generated data
+    return buf.toString('hex');
+  });
+};
 
 export default mongoose.model("User", userSchema);

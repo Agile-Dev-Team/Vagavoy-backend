@@ -16,4 +16,7 @@ router.post('/register', authController.register)
 // LOGIN USER
 router.post('/login', authController.login)
 
+// Verify Email
+router.get('/verify/:token', authController.verify)
+
 export default router;
