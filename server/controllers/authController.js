@@ -40,9 +40,7 @@ export const register = async (req, res) => {
   // HASHING THE PASSWORD
 
   const salt = await bcrypt.genSalt(10)
-  console.log("salt", salt)
   const hashedPassword = await bcrypt.hash(req.body.password, salt)
-  console.log("hashedPassword", hashedPassword)
   // ON PROCESS OF ADDING NEW USER
 
   const user = new User({
@@ -69,9 +67,9 @@ export const register = async (req, res) => {
       const siteURL = keys.siteURL;
 
       // Email the user a unique verification link
-      const url = `${siteURL}/verify/${verificationToken}`;
+      const url = `${siteURL}/auth/verify/${verificationToken}`;
       const { email } = req.body;
-      transporter.sendMail({
+      await transporter.sendMail({
         to: email,
         subject: 'Verify Account',
         html: `<div style='text-align: center'>
@@ -121,6 +119,7 @@ export const login = async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            verified: user.verified,
           })
         }
       )
