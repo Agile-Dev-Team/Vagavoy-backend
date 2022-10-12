@@ -40,8 +40,9 @@ export const register = async (req, res) => {
   // HASHING THE PASSWORD
 
   const salt = await bcrypt.genSalt(10)
+  console.log("salt", salt)
   const hashedPassword = await bcrypt.hash(req.body.password, salt)
-
+  console.log("hashedPassword", hashedPassword)
   // ON PROCESS OF ADDING NEW USER
 
   const user = new User({
