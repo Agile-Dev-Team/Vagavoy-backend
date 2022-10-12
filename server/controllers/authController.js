@@ -70,7 +70,7 @@ export const register = async (req, res) => {
       // Email the user a unique verification link
       const url = `${siteURL}/verify/${verificationToken}`;
       const { email } = req.body;
-      await transporter.sendMail({
+      transporter.sendMail({
         to: email,
         subject: 'Verify Account',
         html: `<div style='text-align: center'>
