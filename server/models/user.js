@@ -35,7 +35,32 @@ const userSchema = new Schema({
   },
   avatarURL: {
     type: String
-  }
+  },
+  bannerImageURL: {
+    type: String
+  },
+  currentlyIn: {
+    type: String
+  },
+  lastTrip: {
+    type: String
+  },
+  nextSpot: {
+    type: String
+  },
+  about: {
+    type: String
+  },
+  travels: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Travel'
+  }],
+  connectedUsers: [{
+    type: Schema.Types.ObjectId
+  }],
+  requestedUsers: [{
+    type: Schema.Types.ObjectId
+  }]
 });
 
 userSchema.methods.generateVerificationToken = function () {
