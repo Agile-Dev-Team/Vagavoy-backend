@@ -93,12 +93,119 @@ const deleteOne = (req, res, next) => {
     });
   });
 }
+
+const findGalleryByTripId = async (req, res, next) => {
+  Travel.findById(req.params.id)
+  .then(travel => {
+    if(!travel) {
+      return res.status(404).json({
+        message: "travel not found with id" + req.params.id
+      });
+    }
+    res.json(travel.imageURLs);
+  }).catch(err => {
+    if(err.kind === 'ObjectId' || err.name === 'NotFound') {
+      return res.status(404).json({
+        message: "travel not found with id " + req.params.id
+      });
+    }
+    return res.status(500).json({
+      message: "Could not delete travel with id " + req.params.id
+    });
+  })
+}
+
+const updateGalleryByTripId = async (req, res, next) => {
+  try {
+    const travel = await Travel.findById(req.params.id)
+    if(!travel) {
+      return res.status(404).json({
+        message: "travel not found with id" + req.params.id
+      });
+    }
+    Object.assign(travel, req.body);
+    travel.save()
+    .then((updatedTravel) => {
+      res.json(updatedTravel.imageURLs)
+    })
+    .catch(err => {
+      return res.status(500).json({
+        message: "travel can't be updated"
+      })
+    })
+  } catch (err) {
+    if(err.kind === 'ObjectId' || err.name === 'NotFound') {
+      return res.status(404).json({
+        message: "travel not found with id " + req.params.id
+      });
+    }
+    return res.status(500).json({
+      message: "Could not delete travel with id " + req.params.id
+    });
+  }
+}
+
+const findRecommendationsByTripId = async (req, res, next) => {
+  Travel.findById(req.params.id)
+  .then(travel => {
+    if(!travel) {
+      return res.status(404).json({
+        message: "travel not found with id" + req.params.id
+      });
+    }
+    res.json(travel.tripRecoms);
+  }).catch(err => {
+    if(err.kind === 'ObjectId' || err.name === 'NotFound') {
+      return res.status(404).json({
+        message: "travel not found with id " + req.params.id
+      });
+    }
+    return res.status(500).json({
+      message: "Could not delete travel with id " + req.params.id
+    });
+  })
+}
+
+const updateRecommendationsByTripId = async (req, res, next) => {
+  try {
+    const travel = await Travel.findById(req.params.id)
+    if(!travel) {
+      return res.status(404).json({
+        message: "travel not found with id" + req.params.id
+      });
+    }
+    Object.assign(travel, req.body);
+    travel.save()
+    .then((updatedTravel) => {
+      res.json(updatedTravel.tripRecoms)
+    })
+    .catch(err => {
+      return res.status(500).json({
+        message: "travel can't be updated"
+      })
+    })
+  } catch (err) {
+    if(err.kind === 'ObjectId' || err.name === 'NotFound') {
+      return res.status(404).json({
+        message: "travel not found with id " + req.params.id
+      });
+    }
+    return res.status(500).json({
+      message: "Could not delete travel with id " + req.params.id
+    });
+  }
+}
+
 const travelController = {
   create,
   update,
   findOne,
   findAll,
   deleteOne,
+  findGalleryByTripId,
+  updateGalleryByTripId,
+  findRecommendationsByTripId,
+  updateRecommendationsByTripId,
 }
 
 export default travelController
