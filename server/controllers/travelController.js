@@ -17,13 +17,31 @@ const create = (req, res, next) => {
   .catch(next)
 }
 
-const update = (req, res, next) => {
-  Object.assign(req.travel, req.body)
-  req.travel.save()
-  .then((updatedTravel) => {
-    res.json(updatedTravel)
+const update = async (req, res, next) => {
+  const travel = await Travel.findById(req.params.id)
+  Travel.findById(req.params.id)
+  .then(travel => {
+    Object.assign(travel, req.body);
+    travel.save()
+    .then((updatedTravel) => {
+      res.json(updatedTravel)
+    })
+    .catch(err => {
+      return res.status(500).json({
+        message: "travel can't be updated"
+      })
+    })
   })
-  .catch(next)
+  .catch(err => {
+    if(err.kind === 'ObjectId') {
+      return res.status(404).json({
+        message: "travel not found with id " + req.params.id
+      });
+    }
+    return res.status(500).json({
+      message: "Error getting travel with id " + req.params.id
+    });
+  })
 }
 
 const findAll = (req, res, next) => {
@@ -32,6 +50,27 @@ const findAll = (req, res, next) => {
     res.json(travels)
   })
   .catch(next)
+}
+
+const findOne = (req, res, next) => {
+  Travel.findById(req.params.id)
+  .then(travel => {
+    if(!travel) {
+      return res.status(404).json({
+        message: "travel not found with id " + req.params.id
+      });
+    }
+    res.json(travel);
+  }).catch(err => {
+    if(err.kind === 'ObjectId') {
+      return res.status(404).json({
+        message: "travel not found with id " + req.params.id
+      });
+    }
+    return res.status(500).json({
+      message: "Error getting travel with id " + req.params.id
+    });
+  });
 }
 
 const deleteOne = (req, res, next) => {
@@ -57,6 +96,7 @@ const deleteOne = (req, res, next) => {
 const travelController = {
   create,
   update,
+  findOne,
   findAll,
   deleteOne,
 }

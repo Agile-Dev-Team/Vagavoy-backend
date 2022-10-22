@@ -17,6 +17,10 @@ router.post("/", passport.authenticate('jwt', {session: false}), userMiddleware,
 
 router.get("/", travelController.findAll);
 
+router.get("/:id", travelController.findOne);
+
 router.put("/:id", passport.authenticate('jwt', {session: false}), userMiddleware, travelController.update);
+
+router.delete("/:id", passport.authenticate('jwt', {session: false}), userMiddleware, travelController.deleteOne);
 
 export default router;
