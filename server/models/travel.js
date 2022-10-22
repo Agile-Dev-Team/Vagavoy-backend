@@ -8,7 +8,7 @@ const travelSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
-  flagImageURL: {
+  countryCode: {
     type: String,
     required: true
   },
