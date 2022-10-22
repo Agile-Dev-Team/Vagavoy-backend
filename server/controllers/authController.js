@@ -116,8 +116,17 @@ export const login = async (req, res) => {
           res.json({
             success: true,
             token: "Bearer " + token,
-            _id: user._id,
-            name: user.name,
+            id: user._id,
+            mainInfo: {
+              firstName: user.name.split(' ')[0],
+              lastName: user.name.split(' ')[1],
+              location: user.currentlyIn,
+              lastTripLocation: user.lastTrip,
+              nextSpotOnBucketList: user.nextSpot
+            },
+            profileImage: user.avatarURL,
+            bannerImage: user.bannerImageURL,
+            about: user.about,
             email: user.email,
             verified: user.verified,
           })
