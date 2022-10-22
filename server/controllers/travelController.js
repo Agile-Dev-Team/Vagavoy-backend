@@ -34,10 +34,31 @@ const findAll = (req, res, next) => {
   .catch(next)
 }
 
+const deleteOne = (req, res, next) => {
+  Travel.findByIdAndRemove(req.params.id)
+  .then(travel => {
+    if(!travel) {
+      return res.status(404).json({
+        message: "travel not found with id " + req.params.id
+      });
+    }
+    res.json({message: "travel deleted successfully!"});
+  }).catch(err => {
+    if(err.kind === 'ObjectId' || err.name === 'NotFound') {
+      return res.status(404).json({
+        message: "travel not found with id " + req.params.id
+      });
+    }
+    return res.status(500).json({
+      message: "Could not delete travel with id " + req.params.id
+    });
+  });
+}
 const travelController = {
   create,
   update,
-  findAll
+  findAll,
+  deleteOne,
 }
 
 export default travelController
