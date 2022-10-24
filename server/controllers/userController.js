@@ -241,8 +241,10 @@ function removeBannerImage(req, res, next) {
 function findTravelByUserId(req, res, next) {
   Travel.find({ userId: req.params.userId })
     .then((travels) => {
-      const newTravels = travels.map(travel => ({ ...travel, tripLogId: travel._id }))
-      res.json(newTravels);
+      travels.forEach(function (travel){
+        travel.tripLogId = travel._id;
+      })
+      res.json(travels);
     })
     .catch(next);
 }
