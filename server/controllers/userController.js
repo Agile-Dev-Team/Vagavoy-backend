@@ -247,7 +247,7 @@ function findTravelByUserId(req, res, next) {
           ...travel,
         });
       });
-      res.json(newTravels);
+      res.json(travels);
     })
     .catch(next);
 }
