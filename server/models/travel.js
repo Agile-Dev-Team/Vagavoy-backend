@@ -34,7 +34,7 @@ const travelSchema = new Schema({
       type: String,
       enum: ['accommodation', 'eating', 'gettingAround', 'activity', 'otherTrip']
     },
-    information: { type: String }
+    description: { type: String }
   }],
   notification: {
     type: Boolean,
