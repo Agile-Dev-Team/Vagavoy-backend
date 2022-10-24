@@ -45,7 +45,7 @@ const update = async (req, res, next) => {
 }
 
 const findAll = (req, res, next) => {
-  Travel.find({user: req.user.id})
+  Travel.find({userId: req.user.id})
   .then((travels) => {
     res.json(travels)
   })

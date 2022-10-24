@@ -4,32 +4,32 @@ const Schema = mongoose.Schema;
 
 const travelSchema = new Schema({
   _id: Schema.Types.ObjectId,
-  user: {
+  userId: {
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
-  countryCode: {
+  tripCountryCode: {
     type: String,
     required: true
   },
-  location: {
+  tripLocation: {
     type: String,
     required: true
   },
-  startDate: {
+  tripStartDate: {
     type: Date
   },
-  endDate: {
+  tripEndDate: {
     type: Date
   },
-  description: {
+  tripDescription: {
     type: String
   },
-  imageURLs: [{
+  tripGallery: [{
     backgroundInfo: { type: String },
-    url: { type: String }
+    src: { type: String }
   }],
-  tripRecoms: [{
+  tripRecommendations: [{
     title: {
       type: String,
       enum: ['accommodation', 'eating', 'gettingAround', 'activity', 'otherTrip']
