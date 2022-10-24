@@ -106,13 +106,7 @@ export const login = async (req, res) => {
         email: user.email,
         userProfile: {
           id: user._id,
-          mainInfo: {
-            firstName: user.name.split(" ")[0],
-            lastName: user.name.split(" ")[1],
-            location: user.location,
-            lastTripLocation: user.lastTripLocation,
-            nextSpotOnBucketList: user.nextSpotOnBucketList,
-          },
+          mainInfo: user.mainInfo,
           profileImage: user.profileImage,
           bannerImage: user.bannerImage,
           about: user.about,
