@@ -4,7 +4,7 @@ import Travel from "../models/travel.js"
 
 const create = (req, res, next) => {
   const travel = new Travel(req.body)
-  travel.user = req.user.id
+  travel.userId = req.user.id
   travel.save()
   .then((newTravel) => {
     req.user.travels.push(newTravel)
