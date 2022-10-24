@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcryptjs'
 
 import User from '../models/user.js'
+import Travel from '../models/travel.js';
 
 const create = async (req, res) => {
   // Validate request
@@ -233,6 +234,15 @@ function removeBannerImage(req, res, next) {
   })
   .catch(next)
 }
+
+function findTravelByUserId(req, res, next) {
+  Travel.find({userId: req.params.userId})
+  .then((travels) => {
+    res.json(travels)
+  })
+  .catch(next)
+}
+
 const userController = {
   create,
   findAll,
@@ -244,7 +254,8 @@ const userController = {
   getUserAvatar,
   uploadBannerImage,
   removeBannerImage,
-  getUserBannerImage
+  getUserBannerImage,
+  findTravelByUserId
 }
 
 export default userController

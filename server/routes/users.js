@@ -25,6 +25,8 @@ router.delete("/:id", passport.authenticate('jwt', {session: false}), userMiddle
 
 router.post("/avatar", passport.authenticate('jwt', {session: false}), userMiddleware, userController.uploadAvatar);
 
+router.get("/travels/:userId", userController.findTravelByUserId);
+
 router.route("/avatar/:userId")
   .get(passport.authenticate('jwt', {session: false}), userController.getUserAvatar)
   .delete(passport.authenticate('jwt', {session: false}), userMiddleware, userController.removeUserAvatar);

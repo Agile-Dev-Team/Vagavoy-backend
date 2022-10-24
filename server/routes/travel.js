@@ -25,7 +25,7 @@ router.delete("/:id", passport.authenticate('jwt', {session: false}), userMiddle
 
 router.route("/:id/gallery")
   .get(travelController.findGalleryByTripId)
-  .put(passport.authenticate('jwt', {session: false}), userMiddleware, travelController.updateGalleryByTripId);
+  // .put(passport.authenticate('jwt', {session: false}), userMiddleware, travelController.updateGalleryByTripId);
   // .delete()
 
 router.route("/:id/recommendations")
