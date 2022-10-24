@@ -32,7 +32,7 @@ const travelSchema = new Schema({
   tripRecommendations: [{
     title: {
       type: String,
-      enum: ['accommodation', 'eating', 'gettingAround', 'activity', 'otherTrip']
+      enum: ['Accommodation', 'Eating & Drinking', 'Getting There & Getting Around', 'Activities', 'Other Tips']
     },
     description: { type: String }
   }],
