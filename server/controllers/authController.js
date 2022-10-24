@@ -44,7 +44,9 @@ export const register = async (req, res) => {
 
   const user = new User({
     _id: new mongoose.Types.ObjectId(),
-    name: req.body.name,
+    mainInfo: {
+      name: req.body.name
+    },
     email: req.body.email,
     password: hashedPassword,
   });
