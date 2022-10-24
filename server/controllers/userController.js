@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 
 import User from "../models/user.js";
 import Travel from "../models/travel.js";
+import travel from "../models/travel.js";
 
 const create = async (req, res) => {
   // Validate request
@@ -240,13 +241,7 @@ function removeBannerImage(req, res, next) {
 function findTravelByUserId(req, res, next) {
   Travel.find({ userId: req.params.userId })
     .then((travels) => {
-      const newTravels = [];
-      travels.forEach((travel) => {
-        newTravels.push({
-          tripLogId: travel._id,
-          ...travel,
-        });
-      });
+      const newTravels = travels.map(travel => ({ ...travel, tripLogId: travel._id }))
       res.json(newTravels);
     })
     .catch(next);
