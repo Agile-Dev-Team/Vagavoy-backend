@@ -165,7 +165,7 @@ function uploadAvatar(req, res, next) {
 
   User.findById(userId)
   .then((user) => {
-    user.avatarURL = req.body.avatarURL  
+    user.profileImage = req.body.profileImage  
     user.save()
     .then((updatedUser) => {
       res.json(updatedUser)
@@ -178,7 +178,7 @@ function uploadAvatar(req, res, next) {
 function getUserAvatar(req, res, next) {
   User.findById(req.params.userId)
   .then((user) => {
-    res.json(user.avatarURL)
+    res.json(user.profileImage)
   })
   .catch(next)
 }
@@ -186,7 +186,7 @@ function getUserAvatar(req, res, next) {
 function removeUserAvatar(req, res, next) {
   User.findById(req.params.userId)
   .then((user) => {
-    user.avatarURL = null
+    user.profileImage = null
 
     user.save()
     .then(() => {
@@ -203,7 +203,7 @@ function uploadBannerImage(req, res, next) {
 
   User.findById(userId)
   .then((user) => {
-    user.bannerImageURL = req.body.bannerImageURL 
+    user.bannerImage = req.body.bannerImage 
     user.save()
     .then((updatedUser) => {
       res.json(updatedUser)
@@ -216,7 +216,7 @@ function uploadBannerImage(req, res, next) {
 function getUserBannerImage(req, res, next) {
   User.findById(req.params.userId)
   .then((user) => {
-    res.json(user.bannerImageURL)
+    res.json(user.bannerImage)
   })
   .catch(next)
 }
@@ -224,7 +224,7 @@ function getUserBannerImage(req, res, next) {
 function removeBannerImage(req, res, next) {
   User.findById(req.params.userId)
   .then((user) => {
-    user.bannerImageURL = null
+    user.bannerImage = null
     user.save()
     .then(() => {
       res.json({ message: 'Banner Image for user have been removed' })

@@ -6,11 +6,22 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
   _id: mongoose.Schema.Types.ObjectId,
-  name: {
-    type: String,
-    required: true,
-    min:6,
-    max: 255
+  mainInfo: {
+    name: {
+      type: String,
+      required: true,
+      min:6,
+      max: 255
+    },
+    location: {
+      type: String
+    },
+    lastTripLocation: {
+      type: String
+    },
+    nextSpotOnBucketList: {
+      type: String
+    },
   },
   email: {
     type: String,
@@ -33,19 +44,10 @@ const userSchema = new Schema({
     required: true,
     default: false
   },
-  avatarURL: {
+  profileImage: {
     type: String
   },
-  bannerImageURL: {
-    type: String
-  },
-  currentlyIn: {
-    type: String
-  },
-  lastTrip: {
-    type: String
-  },
-  nextSpot: {
+  bannerImage: {
     type: String
   },
   about: {
