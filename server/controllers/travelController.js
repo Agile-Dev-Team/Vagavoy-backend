@@ -3,7 +3,7 @@ import mongoose from "mongoose"
 import Travel from "../models/travel.js"
 
 const create = (req, res, next) => {
-  const travel = new Travel(req.body)
+  const travel = new Travel(req.body.tripLog)
   travel._id = new mongoose.Types.ObjectId();
   travel.userId = req.user.id
   travel.save()
