@@ -103,7 +103,7 @@ const findGalleryByTripId = async (req, res, next) => {
         message: "travel not found with id" + req.params.id
       });
     }
-    res.json(travel.imageURLs);
+    res.json(travel.tripGallery);
   }).catch(err => {
     if(err.kind === 'ObjectId' || err.name === 'NotFound') {
       return res.status(404).json({
@@ -127,7 +127,7 @@ const updateGalleryByTripId = async (req, res, next) => {
     Object.assign(travel, req.body);
     travel.save()
     .then((updatedTravel) => {
-      res.json(updatedTravel.imageURLs)
+      res.json(updatedTravel.tripGallery)
     })
     .catch(err => {
       return res.status(500).json({
@@ -154,7 +154,7 @@ const findRecommendationsByTripId = async (req, res, next) => {
         message: "travel not found with id" + req.params.id
       });
     }
-    res.json(travel.tripRecoms);
+    res.json(travel.tripRecommendations);
   }).catch(err => {
     if(err.kind === 'ObjectId' || err.name === 'NotFound') {
       return res.status(404).json({
@@ -178,7 +178,7 @@ const updateRecommendationsByTripId = async (req, res, next) => {
     Object.assign(travel, req.body);
     travel.save()
     .then((updatedTravel) => {
-      res.json(updatedTravel.tripRecoms)
+      res.json(updatedTravel.tripRecommendations)
     })
     .catch(err => {
       return res.status(500).json({
