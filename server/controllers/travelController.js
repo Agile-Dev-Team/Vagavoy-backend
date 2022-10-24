@@ -4,6 +4,7 @@ import Travel from "../models/travel.js"
 
 const create = (req, res, next) => {
   const travel = new Travel(req.body)
+  travel._id = new mongoose.Types.ObjectId();
   travel.userId = req.user.id
   travel.save()
   .then((newTravel) => {
