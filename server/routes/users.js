@@ -35,4 +35,6 @@ router.route("/bannerImage/:userId")
   .get(passport.authenticate('jwt', {session: false}), userController.getUserBannerImage)
   .delete(passport.authenticate('jwt', {session: false}), userMiddleware, userController.removeBannerImage);
 
+router.post("/search", userController.searchUsersByTrip);
+
 export default router;

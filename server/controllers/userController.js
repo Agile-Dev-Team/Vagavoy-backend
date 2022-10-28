@@ -249,6 +249,22 @@ function findTravelByUserId(req, res, next) {
     .catch(next);
 }
 
+const searchUsersByTrip = async (req, res, next) => {
+  let users = [];
+  try {
+    const travels = await Travel.find({tripLocation: req.body});
+    travels.map(async travel => {
+      const user = await User.findById(travel.userId);
+      if(users == []) users.push(user);
+      else if(!users.some(el => el._id === user._id))
+      users.push(user);
+    })
+    res.json(users);
+  } catch (err) {
+    return res.json(err);
+  }
+}
+
 const userController = {
   create,
   findAll,
@@ -262,6 +278,7 @@ const userController = {
   removeBannerImage,
   getUserBannerImage,
   findTravelByUserId,
+  searchUsersByTrip,
 };
 
 export default userController;
