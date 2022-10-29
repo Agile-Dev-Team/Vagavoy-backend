@@ -16,7 +16,7 @@ router.get("/:id", travelController.findOne);
 
 router.put("/:id", passport.authenticate('jwt', {session: false}), userMiddleware, travelController.update);
 
-router.delete("/:id", passport.authenticate('jwt', {session: false}), userMiddleware, travelController.deleteOne);
+router.delete("/:userId/:id", passport.authenticate('jwt', {session: false}), userMiddleware, travelController.deleteOne);
 
 router.route("/:id/gallery")
   .get(travelController.findGalleryByTripId)
