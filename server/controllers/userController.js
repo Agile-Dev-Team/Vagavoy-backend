@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import User from "../models/user.js";
 import Travel from "../models/travel.js";
 import travel from "../models/travel.js";
+import user from "../models/user.js";
 
 const create = async (req, res) => {
   // Validate request
@@ -253,12 +254,23 @@ const searchUsersByTrip = async (req, res, next) => {
   let users = [];
   try {
     const travels = await Travel.find({tripLocation: req.body.searchKey});
-    travels.map(async travel => {
+    // console.log("Searched Travels", travels)
+    const users = await Promise.all(travels.map(async travel => {
       const user = await User.findById(travel.userId);
-      if(users == []) users.push(user);
-      else if(!users.some(el => el._id === user._id))
-      users.push(user);
+      // if(!users.length) {
+      //   // users.push(user);
+      //   return user;
+      // }
+      // else if(!users.some(el => el._id === user._id))
+      // // users.push(user);
+      return user
+    }))
+    users.filter((value, index, self) => {
+      self.findIndex((t) => (
+        t._id === value._id
+      )) === index
     })
+    // console.log("Result", users)
     res.json(users);
   } catch (err) {
     return res.json(err);
