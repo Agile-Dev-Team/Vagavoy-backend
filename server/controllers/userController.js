@@ -239,19 +239,18 @@ function removeBannerImage(req, res, next) {
     .catch(next);
 }
 
-function findTravelByUserId(req, res, next) {
+const findTravelByUserId = async (req, res, next) => {
   Travel.find({ userId: req.params.userId })
-    .then((travels) => {
-      travels.forEach(function (travel){
+    .then(async (travels) => {
+      const newTravels = await Promis.all(travels.map(async travel => {
         travel.tripLogId = travel._id;
-      })
-      res.json(travels);
+      }))
+      res.json(newTravels);
     })
     .catch(next);
 }
 
 const searchUsersByTrip = async (req, res, next) => {
-  let users = [];
   try {
     const travels = await Travel.find({tripLocation: req.body.searchKey});
     // console.log("Searched Travels", travels)
