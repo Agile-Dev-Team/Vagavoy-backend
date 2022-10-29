@@ -239,13 +239,13 @@ function removeBannerImage(req, res, next) {
     .catch(next);
 }
 
-const findTravelByUserId = async (req, res, next) => {
+function findTravelByUserId(req, res, next) {
   Travel.find({ userId: req.params.userId })
-    .then(async (travels) => {
-      const newTravels = await Promis.all(travels.map(async travel => {
+    .then((travels) => {
+      travels.forEach(function (travel){
         travel.tripLogId = travel._id;
-      }))
-      res.json(newTravels);
+      })
+      res.json(travels);
     })
     .catch(next);
 }
