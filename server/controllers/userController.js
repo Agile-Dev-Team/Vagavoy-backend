@@ -264,11 +264,11 @@ const searchUsersByTrip = async (req, res, next) => {
       // // users.push(user);
       return user
     }))
-    users.filter((value, index, self) => {
+    users = users.filter((value, index, self) => 
       self.findIndex((t) => (
         t._id === value._id
       )) === index
-    })
+    )
     // console.log("Result", users)
     res.json(users);
   } catch (err) {
