@@ -242,7 +242,7 @@ function removeBannerImage(req, res, next) {
 function findTravelByUserId(req, res, next) {
   Travel.find({ userId: req.params.userId })
     .then((travels) => {
-      travels.forEach(function (travel){
+      travels.forEach(function (travel) {
         travel.tripLogId = travel._id;
       })
       res.json(travels);
@@ -252,19 +252,35 @@ function findTravelByUserId(req, res, next) {
 
 const searchUsersByTrip = async (req, res, next) => {
   try {
-    const travels = await Travel.find({tripLocation: req.body.searchKey.substring(0,2)});
+    console.log(req.body.searchKey.substring(0, 2))
+    // const travels = await Travel.find({tripLocation: { $regex: req.body.searchKey.substring(0, 2)}});
     // console.log("Searched Travels", travels)
-    const users = await Promise.all(travels.map(async travel => {
-      const user = await User.findById(travel.userId);
-      // if(!users.length) {
-      //   // users.push(user);
-      //   return user;
-      // }
-      // else if(!users.some(el => el._id === user._id))
-      // // users.push(user);
-      return user
-    }))
-    users = users.filter((value, index, self) => 
+    // let users = await Promise.all(travels.map(async travel => {
+    //   const user = await User.findById(travel.userId);
+    //   // if(!users.length) {
+    //   //   // users.push(user);
+    //   //   return user;
+    //   // }
+    //   // else if(!users.some(el => el._id === user._id))
+    //   // // users.push(user);
+    //   return user
+    // }))
+    const key = { $regex: req.body.searchKey.substring(0,2), $options: "i" };
+    let users = await User.find({
+      $or: [
+        {
+          'mainInfo.location': key
+        }, 
+        {
+          'mainInfo.lastTripLocation': key 
+        }, 
+        { 
+          'mainInfo.nextSpotOnBucketList': key 
+        }
+      ] 
+    });
+    console.log(users)
+    users = users.filter((value, index, self) =>
       self.findIndex((t) => (
         t._id === value._id
       )) === index
