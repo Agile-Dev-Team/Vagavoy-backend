@@ -252,7 +252,7 @@ function findTravelByUserId(req, res, next) {
 
 const searchUsersByTrip = async (req, res, next) => {
   try {
-    const travels = await Travel.find({tripLocation: req.body.searchKey});
+    const travels = await Travel.find({tripLocation: req.body.searchKey.substring(0,2)});
     // console.log("Searched Travels", travels)
     const users = await Promise.all(travels.map(async travel => {
       const user = await User.findById(travel.userId);
