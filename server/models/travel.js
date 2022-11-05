@@ -26,6 +26,7 @@ const travelSchema = new Schema({
     type: String
   },
   tripGallery: [{
+    tripImageId: { type: String },
     backgroundInfo: { type: String },
     src: { type: String }
   }],
