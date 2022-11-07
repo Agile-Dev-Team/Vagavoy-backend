@@ -265,9 +265,13 @@ const searchUsersByTrip = async (req, res, next) => {
     //   // // users.push(user);
     //   return user
     // }))
-    const key = { $regex: req.body.searchKey.substring(0,2), $options: "i" };
+    // const key = { $regex: req.body.searchKey.substring(0,2), $options: "i" };
+    const key = { $regex: req.body.searchKey, $options: "i" };
     let users = await User.find({
       $or: [
+        {
+          'mainInfo.name': key
+        },
         {
           'mainInfo.location': key
         }, 
