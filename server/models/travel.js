@@ -8,6 +8,10 @@ const travelSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
+  mainTrip: {
+    type: Boolean,
+    default: false
+  },
   tripCountryCode: {
     type: String,
     required: true
