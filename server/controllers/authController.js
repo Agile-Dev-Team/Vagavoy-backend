@@ -109,7 +109,7 @@ export const login = async (req, res) => {
         userProfile: {
           id: user._id,
           mainInfo: user.mainInfo,
-          profileImage: user.profileImage,
+          // profileImage: user.profileImage,
           bannerImage: user.bannerImage,
           about: user.about,
           email: user.email,
