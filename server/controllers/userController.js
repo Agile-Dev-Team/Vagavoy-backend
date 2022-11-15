@@ -296,6 +296,85 @@ const searchUsersByTrip = async (req, res, next) => {
   }
 }
 
+const connectRequest = async (req, res, next) => {
+  User.findById(req.body.userId)
+    .then((user) => {
+      console.log(req.user.id);
+      console.log(user.requestedUsers);
+      if(user.requestedUsers.indexOf(req.user.id) === -1 && user.connectedUsers.indexOf(req.user.id) === -1) {
+        user.requestedUsers.push(req.user.id);
+        user.save()
+          .then(newUser => res.json(newUser))
+          .catch(err => console.log(err))
+      } else res.json("This user was already requested to connect");
+    })
+    .catch(next);
+}
+
+const connectAccept = async (req, res, next) => {
+  console.log("here is accept section")
+  User.findById(req.user.id)
+    .then((user) => {
+      console.log(user.requestedUsers);
+      const index = user.requestedUsers.indexOf(req.body.userId);
+      if (index > -1) {
+        user.requestedUsers.splice(index, 1);
+      }
+      console.log("connectedUsers", user.connectedUsers, req.body.userId)
+      user.connectedUsers.push(req.body.userId);
+      User.findById(req.body.userId)
+        .then((connectedUser) => {
+          console.log("error area", connectedUser, req.user.id)
+          connectedUser.connectedUsers.push(req.user.id);
+          user.save()
+            .then(newUser => {
+              connectedUser.save();
+              res.json(newUser);
+            })
+            .catch(next);
+        })
+        .catch(next);
+    })
+    .catch(next);
+}
+
+const connectReject = async (req, res, next) => {
+  User.findById(req.user.id)
+    .then((user) => {
+      console.log(user.requestedUsers);
+      const index = user.requestedUsers.indexOf(req.body.userId);
+      if (index > -1)
+        user.requestedUsers.splice(index, 1);
+      user.save()
+        .then(newUser => res.json(newUser))
+        .catch(next);
+    })
+    .catch(next);
+}
+
+const connectRemove = async (req, res, next) => {
+  User.findById(req.user.id)
+    .then((user) => {
+      console.log(user.connectedUsers);
+      const index = user.connectedUsers.indexOf(req.body.userId);
+      if (index > -1)
+        user.connectedUsers.splice(index, 1);
+      User.findById(req.body.userId)
+        .then((removedUser) => {
+          const removedIndex = removedUser.connectedUsers.indexOf(req.user.id);
+          removedUser.connectedUsers.splice(removedIndex, 1);
+          user.save()
+            .then(newUser => {
+              removedUser.save();
+              res.json(newUser);
+            })
+            .catch(next);
+        })
+        .catch(next);
+    })
+    .catch(next);
+}
+ 
 const userController = {
   create,
   findAll,
@@ -310,6 +389,10 @@ const userController = {
   getUserBannerImage,
   findTravelByUserId,
   searchUsersByTrip,
+  connectRequest,
+  connectAccept,
+  connectReject,
+  connectRemove
 };
 
 export default userController;

@@ -58,10 +58,10 @@ const userSchema = new Schema({
     ref: 'Travel'
   }],
   connectedUsers: [{
-    type: Schema.Types.ObjectId
+    type: String
   }],
   requestedUsers: [{
-    type: Schema.Types.ObjectId
+    type: String
   }]
 });
 

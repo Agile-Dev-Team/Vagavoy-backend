@@ -37,4 +37,12 @@ router.route("/bannerImage/:userId")
 
 router.post("/search", userController.searchUsersByTrip);
 
+router.post("/connectRequest", passport.authenticate('jwt', {session: false}), userController.connectRequest);
+
+router.post("/connectAccept", passport.authenticate('jwt', {session: false}), userController.connectAccept);
+
+router.post("/connectReject", passport.authenticate('jwt', {session: false}), userController.connectReject);
+
+router.post("/connectRemove", passport.authenticate('jwt', {session: false}), userController.connectRemove);
+
 export default router;
