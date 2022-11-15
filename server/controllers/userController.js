@@ -306,7 +306,7 @@ const connectRequest = async (req, res, next) => {
         user.save()
           .then(newUser => res.json(newUser))
           .catch(err => console.log(err))
-      } else res.json("This user was already requested to connect");
+      } else res.status(400).json("This user was already requested to connect");
     })
     .catch(next);
 }
@@ -374,6 +374,16 @@ const connectRemove = async (req, res, next) => {
     })
     .catch(next);
 }
+
+const connectRecommend = async (req, res, next) => {
+  console.log("recommend")
+  User.find({'mainInfo.location' : req.user.mainInfo.location})
+    .then(users => {
+      const newUsers = users.filter((user, index, itself) => user._id != req.user.id);
+      res.json(newUsers);
+    })
+    .catch(next)
+}
  
 const userController = {
   create,
@@ -392,7 +402,8 @@ const userController = {
   connectRequest,
   connectAccept,
   connectReject,
-  connectRemove
+  connectRemove,
+  connectRecommend
 };
 
 export default userController;

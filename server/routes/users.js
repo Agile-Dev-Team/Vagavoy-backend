@@ -45,4 +45,6 @@ router.post("/connectReject", passport.authenticate('jwt', {session: false}), us
 
 router.post("/connectRemove", passport.authenticate('jwt', {session: false}), userController.connectRemove);
 
+router.get("/:id/connectRecommend", passport.authenticate('jwt', {session: false}), userController.connectRecommend);
+
 export default router;
