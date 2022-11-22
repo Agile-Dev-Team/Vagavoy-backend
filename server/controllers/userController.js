@@ -399,7 +399,10 @@ const getConnections = async (currentUser) => {
   });
 
   let recommendedUsers = await User.find({'mainInfo.location' : currentUser.mainInfo.location}).select('mainInfo profileImage bannerImage');
-  recommendedUsers = recommendedUsers.filter((user, index, itself) => {user._id != currentUser.id && !requestedUserIds.includes(user._id) && !connectedUserIds.includes(user._id)});
+  recommendedUsers = recommendedUsers.filter((user, index, itself) => {
+    if(user._id != currentUser.id && !requestedUserIds.includes(user._id) && !connectedUserIds.includes(user._id)) return true;
+    else return false;
+  });
   return {connectedUsers, requestedUsers, recommendedUsers}
 }
 
