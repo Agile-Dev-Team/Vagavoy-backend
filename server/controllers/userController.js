@@ -375,16 +375,39 @@ const connectRemove = async (req, res, next) => {
     .catch(next);
 }
 
-const connectRecommend = async (req, res, next) => {
-  console.log("recommend")
-  User.find({'mainInfo.location' : req.user.mainInfo.location})
-    .then(users => {
-      const newUsers = users.filter((user, index, itself) => user._id != req.user.id);
-      res.json(newUsers);
+const connections = async (req, res, next) => {
+  console.log("connection", req.user.id)
+  User.findById(req.user.id)
+    .then(async currentUser => {
+      const connectedUserIds = currentUser.connectedUsers || [];
+      const requestedUserIds = currentUser.requestedUsers || [];
+      let connectedUsers = [];
+      let requestedUsers = [];
+      connectedUserIds.forEach(userId => connectedUsers.push(User.findById(userId).select('mainInfo profileImage')));
+      await Promise.all(connectedUsers)
+      .then(v => {
+        connectedUsers = v;
+      })
+      .catch(err => {
+        console.log("No connected users");
+      });
+
+      requestedUserIds.forEach(userId => requestedUsers.push(User.findById(userId).select('mainInfo profileImage')));
+      await Promise.all(requestedUsers)
+      .then(v => {
+        requestedUsers = v;
+      })
+      .catch(err => {
+        console.log("No connected users");
+      });
+
+      let recommendedUsers = await User.find({'mainInfo.location' : req.user.mainInfo.location}).select('mainInfo profileImage');
+      recommendedUsers = recommendedUsers.filter((user, index, itself) => user._id != req.user.id);
+      res.json({connectedUsers, requestedUsers, recommendedUsers});
     })
     .catch(next)
 }
- 
+
 const userController = {
   create,
   findAll,
@@ -403,7 +426,7 @@ const userController = {
   connectAccept,
   connectReject,
   connectRemove,
-  connectRecommend
+  connections
 };
 
 export default userController;
