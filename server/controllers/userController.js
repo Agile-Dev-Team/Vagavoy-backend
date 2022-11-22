@@ -398,8 +398,8 @@ const getConnections = async (currentUser) => {
     console.log("No connected users");
   });
 
-  let recommendedUsers = await User.find({'mainInfo.location' : currentUser.mainInfo.location}).select('mainInfo profileImage');
-  recommendedUsers = recommendedUsers.filter((user, index, itself) => user._id != currentUser.id);
+  let recommendedUsers = await User.find({'mainInfo.location' : currentUser.mainInfo.location}).select('mainInfo profileImage bannerImage');
+  recommendedUsers = recommendedUsers.filter((user, index, itself) => user._id != currentUser.id && !currentUser.requestedUserIds.includes(user._id) && !currentUser.connectedUserIds.includes(user._id));
   return {connectedUsers, requestedUsers, recommendedUsers}
 }
 
