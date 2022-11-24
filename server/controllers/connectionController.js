@@ -32,7 +32,6 @@ const getConnections = async (currentUser) => {
   let requestingUsers = [];
   requestingUsers = await Promise.all(requestingUserIds.map(async(requestingUserId) => {
     const requestingUser = await User.findById(requestingUserId).select('mainInfo profileImage');
-    requestingUsers.push(requestingUser);
     return requestingUser;
   }));
   console.log('1', requestingUsers)
@@ -41,11 +40,10 @@ const getConnections = async (currentUser) => {
   connectedUsers = await Promise.all(connectedUserIds.map(async(connectedUserId) => {
     console.log('id', connectedUserId)
     const connectedUser = await User.findById(connectedUserId).select('mainInfo profileImage');
-    connectedUsers.push(connectedUser);
     return connectedUser;
   }));
   console.log('21', connectedUsers)
-  
+
   let recommendedUsers = await User.find({'mainInfo.location' : currentUser.mainInfo.location}).select('mainInfo profileImage bannerImage');
   recommendedUsers = recommendedUsers.filter(recommendedUser => recommendedUser._id != userId && !linkedUserIds.includes(recommendedUser._id.toString()));
   console.log("recommendedusers",recommendedUsers);

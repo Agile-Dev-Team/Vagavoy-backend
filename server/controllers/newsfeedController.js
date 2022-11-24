@@ -16,11 +16,10 @@ const getNewsFeed = async (req, res, next) => {
   let travels = [];
   travels = await Promise.all(connectedUserIds.map(async(connectedUserId) => {
     console.log('id', connectedUserId)
-    // const connectedUser = await User.findById(connectedUserId).select('mainInfo profileImage travels').populate('travels').exec();
-    const travel = await Travel.find({userId: connectedUserId, notification: true}).populate('userId', 'mainInfo profileImage').exec();
-    travels.push(travel);
-    return travel;
+    const travels = await Travel.find({userId: connectedUserId, notification: true}).populate('userId', 'mainInfo profileImage').exec();
+    return travels;
   }));
+  travels = [].concat.apply([], travels);
   console.log('travels', travels);
   res.json(travels)
 }
