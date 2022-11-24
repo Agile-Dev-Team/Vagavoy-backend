@@ -253,19 +253,6 @@ function findTravelByUserId(req, res, next) {
 const searchUsersByTrip = async (req, res, next) => {
   try {
     console.log(req.body.searchKey.substring(0, 2))
-    // const travels = await Travel.find({tripLocation: { $regex: req.body.searchKey.substring(0, 2)}});
-    // console.log("Searched Travels", travels)
-    // let users = await Promise.all(travels.map(async travel => {
-    //   const user = await User.findById(travel.userId);
-    //   // if(!users.length) {
-    //   //   // users.push(user);
-    //   //   return user;
-    //   // }
-    //   // else if(!users.some(el => el._id === user._id))
-    //   // // users.push(user);
-    //   return user
-    // }))
-    // const key = { $regex: req.body.searchKey.substring(0,2), $options: "i" };
     const key = { $regex: req.body.searchKey, $options: "i" };
     let users = await User.find({
       $or: [
@@ -296,127 +283,6 @@ const searchUsersByTrip = async (req, res, next) => {
   }
 }
 
-const connectRequest = async (req, res, next) => {
-  User.findById(req.body.userId)
-    .then((user) => {
-      console.log(req.user.id);
-      console.log(user.requestedUsers);
-      if(user.requestedUsers.indexOf(req.user.id) === -1 && user.connectedUsers.indexOf(req.user.id) === -1) {
-        user.requestedUsers.push(req.user.id);
-        user.save()
-          .then(async newUser => res.json(await getConnections(req.user)))
-          .catch(err => console.log(err))
-      } else res.status(400).json("This user was already requested to connect");
-    })
-    .catch(next);
-}
-
-const connectAccept = async (req, res, next) => {
-  console.log("here is accept section")
-  User.findById(req.user.id)
-    .then((user) => {
-      console.log(user.requestedUsers);
-      const index = user.requestedUsers.indexOf(req.body.userId);
-      if (index > -1) {
-        user.requestedUsers.splice(index, 1);
-      }
-      console.log("connectedUsers", user.connectedUsers, req.body.userId)
-      user.connectedUsers.push(req.body.userId);
-      User.findById(req.body.userId)
-        .then((connectedUser) => {
-          console.log("error area", connectedUser, req.user.id)
-          connectedUser.connectedUsers.push(req.user.id);
-          user.save()
-            .then(async newUser => {
-              connectedUser.save();
-              res.json(await getConnections(newUser));
-            })
-            .catch(next);
-        })
-        .catch(next);
-    })
-    .catch(next);
-}
-
-const connectReject = async (req, res, next) => {
-  User.findById(req.user.id)
-    .then((user) => {
-      console.log(user.requestedUsers);
-      const index = user.requestedUsers.indexOf(req.body.userId);
-      if (index > -1)
-        user.requestedUsers.splice(index, 1);
-      user.save()
-        .then(async newUser => res.json(await getConnections(newUser)))
-        .catch(next);
-    })
-    .catch(next);
-}
-
-const connectRemove = async (req, res, next) => {
-  User.findById(req.user.id)
-    .then((user) => {
-      console.log(user.connectedUsers);
-      const index = user.connectedUsers.indexOf(req.body.userId);
-      if (index > -1)
-        user.connectedUsers.splice(index, 1);
-      User.findById(req.body.userId)
-        .then((removedUser) => {
-          const removedIndex = removedUser.connectedUsers.indexOf(req.user.id);
-          removedUser.connectedUsers.splice(removedIndex, 1);
-          user.save()
-            .then(async newUser => {
-              removedUser.save();
-              res.json(await getConnections(newUser));
-            })
-            .catch(next);
-        })
-        .catch(next);
-    })
-    .catch(next);
-}
-
-const getConnections = async (currentUser) => {
-  const connectedUserIds = currentUser.connectedUsers || [];
-  const requestedUserIds = currentUser.requestedUsers || [];
-  let connectedUsers = [];
-  let requestedUsers = [];
-  connectedUserIds.forEach(userId => connectedUsers.push(User.findById(userId).select('mainInfo profileImage')));
-  await Promise.all(connectedUsers)
-  .then(v => {
-    connectedUsers = v;
-  })
-  .catch(err => {
-    console.log("No connected users");
-  });
-
-  requestedUserIds.forEach(userId => requestedUsers.push(User.findById(userId).select('mainInfo profileImage')));
-  await Promise.all(requestedUsers)
-  .then(v => {
-    requestedUsers = v;
-  })
-  .catch(err => {
-    console.log("No connected users");
-  });
-
-  let recommendedUsers = await User.find({'mainInfo.location' : currentUser.mainInfo.location}).select('mainInfo profileImage bannerImage');
-  recommendedUsers = recommendedUsers.filter((user, index, itself) => {
-    if(user._id != currentUser.id && !requestedUserIds.includes(user._id) && !connectedUserIds.includes(user._id)) return true;
-    else return false;
-  });
-  return {connectedUsers, requestedUsers, recommendedUsers}
-}
-
-const connections = async (req, res, next) => {
-  console.log("connection", req.user.id)
-  const newUser = await User.findById(req.user.id);
-  try {
-    const result = await getConnections(newUser);
-    res.json(result);
-  }
-  catch(err) {res.status(404).send(err);}
-
-}
-
 const userController = {
   create,
   findAll,
@@ -430,12 +296,7 @@ const userController = {
   removeBannerImage,
   getUserBannerImage,
   findTravelByUserId,
-  searchUsersByTrip,
-  connectRequest,
-  connectAccept,
-  connectReject,
-  connectRemove,
-  connections
+  searchUsersByTrip
 };
 
 export default userController;

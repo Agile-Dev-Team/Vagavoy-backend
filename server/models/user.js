@@ -62,6 +62,9 @@ const userSchema = new Schema({
   }],
   requestedUsers: [{
     type: String
+  }],
+  myRequests: [{
+    type: String
   }]
 });
 
