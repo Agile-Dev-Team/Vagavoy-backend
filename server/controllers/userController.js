@@ -280,12 +280,12 @@ const searchUsersByTrip = async (req, res, next) => {
         let connectionStatus;
         const connection1 = await Connection.findOne({requestingUser: req.body.userId, requestedUser: searchedUser._id});
         if (connection1) 
-          connectionStatus = connection1.status;
+          connectionStatus = connection1.status=="pending" ? "Pending" : "Connected";
         const connection2 = await Connection.findOne({requestingUser: searchedUser._id.toString(), requestedUser: req.body.userId});
         if (connection2)
-          connectionStatus = connection2.status=="pending" ? "requested" : "connected";
+          connectionStatus = connection2.status=="pending" ? "Requested" : "Connected";
         if (!connection1 && !connection2)
-          connectionStatus = "notConnected";
+          connectionStatus = "NotConnected";
         
         searchedUser = {...searchedUser.toJSON(), connectionStatus};
         console.log("searchedUser", searchedUser)
