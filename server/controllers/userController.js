@@ -3,8 +3,7 @@ import bcrypt from "bcryptjs";
 
 import User from "../models/user.js";
 import Travel from "../models/travel.js";
-import travel from "../models/travel.js";
-import user from "../models/user.js";
+import Connection from "../models/connection.js";
 
 const create = async (req, res) => {
   // Validate request
@@ -269,13 +268,32 @@ const searchUsersByTrip = async (req, res, next) => {
           'mainInfo.nextSpotOnBucketList': key 
         }
       ] 
-    });
-    console.log(users)
+    }).select('mainInfo profileImage');
     users = users.filter((value, index, self) =>
       self.findIndex((t) => (
         t._id === value._id
       )) === index
-    )
+    );
+    if (req.body.userId){
+      console.log("auth")
+      users = await Promise.all(users.map(async (searchedUser) => {
+        let connectionStatus;
+        const connection1 = await Connection.findOne({requestingUser: req.body.userId, requestedUser: searchedUser._id});
+        if (connection1) 
+          connectionStatus = connection1.status;
+        const connection2 = await Connection.findOne({requestingUser: searchedUser._id.toString(), requestedUser: req.body.userId});
+        if (connection2)
+          connectionStatus = connection2.status=="pending" ? "requested" : "connected";
+        if (!connection1 && !connection2)
+          connectionStatus = "notConnected";
+        
+        searchedUser = {...searchedUser.toJSON(), connectionStatus};
+        console.log("searchedUser", searchedUser)
+        return searchedUser;
+      }));
+      console.log("users", users)
+    }
+      
     // console.log("Result", users)
     res.json(users);
   } catch (err) {
