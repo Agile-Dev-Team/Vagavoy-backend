@@ -43,7 +43,7 @@ const travelSchema = new Schema({
   }],
   notification: {
     type: Boolean,
-    default: true
+    default: false
   }
 })
 
