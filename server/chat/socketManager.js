@@ -22,6 +22,7 @@ class SocketManger {
             isWatched: false
         })
         const savedMessage = await message.save();
+        console.log(savedMessage);
         if(this.sockets[receiverId])
             this.sockets[receiverId].emit('message',{
                 senderId:senderId,

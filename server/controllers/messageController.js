@@ -88,7 +88,7 @@ const getAddress = async (req, res) => {
                 
             } else {
                 users.forEach(element => {
-                    if(element.id === messages[k].senderId.toHexString()){
+                    if(element.id === messages[k].senderId.toHexString() && !messages[k].isWatched){
                         element.content = messages[k].content;
                         element.time = messages[k].time;
                         element.unreadNumber += 1;
@@ -117,6 +117,7 @@ const getMessages = async (req, res) => {
             }
         ]
     });
+    console.log(messages);
     for (let k = 1; k < messages.length; k++) {
         if(messages[k].receiverId.toHexString() === userId){
             await Message.findByIdAndUpdate(messages[k]._id.toHexString(),{isWatched: true})
