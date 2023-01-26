@@ -50,6 +50,7 @@ export const register = async (req, res) => {
     email: req.body.email,
     password: hashedPassword,
   });
+  console.log(req.body);
 
   try {
     // VALIDATION OF USER INPUTS
@@ -69,15 +70,16 @@ export const register = async (req, res) => {
 
       // Email the user a unique verification link
       const url = `${siteURL}/auth/verify/${verificationToken}`;
+      console.log(url);
       const { email } = req.body;
-      await transporter.sendMail({
-        to: email,
-        subject: "Verify Account",
-        html: `<div style='text-align: center'>
-                <h2>You have a message from Vagavoy</h2>
-                <h3>Click <a href = '${url}' >here</a> to confirm your email.</h3>
-              </div>`,
-      });
+      // await transporter.sendMail({
+      //   to: email,
+      //   subject: "Verify Account",
+      //   html: `<div style='text-align: center'>
+      //           <h2>You have a message from Vagavoy</h2>
+      //           <h3>Click <a href = '${url}' >here</a> to confirm your email.</h3>
+      //         </div>`,
+      // });
       const saveUser = await user.save();
       res.status(200).send("user created");
     }
