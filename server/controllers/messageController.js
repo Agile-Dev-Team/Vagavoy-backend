@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 
 import User from "../models/user.js";
 import Message from "../models/message.js";
-import user from "../models/user.js";
-import message from "../models/message.js";
+import Connection from "../models/connection.js";
 
 const findUsers = async (req, res) => {
     const search = req.params.searchText;
@@ -50,43 +49,64 @@ const getAddress = async (req, res) => {
             }
         ]
     })
-    let users = [];
+    let linkedUserIds1 = await Connection.find({requestedUser: userId}).select('requestingUser');
+    if(linkedUserIds1) 
+        linkedUserIds1 = linkedUserIds1.map(linkedUserId => linkedUserId.requestingUser);
+    let linkedUserIds2 = await Connection.find({requestingUser: userId}).select('requestedUser');
+    if(linkedUserIds2) 
+        linkedUserIds2 = linkedUserIds2.map(linkedUserId => linkedUserId.requestedUser);
+    const linkedUserIds = [...linkedUserIds1, ...linkedUserIds2].filter((linkedUserId)=>linkedUserId !== userId);
+    const userIds = [];
+    linkedUserIds.forEach(id=>{
+        if(userIds.indexOf(id)<0)userIds.push(id);
+    })
+    console.log("linkdedUserIds", userIds);
+    let connectionUsers = [];
+    connectionUsers = await Promise.all(userIds.map(async(id) => {
+        const connectionUser = await User.findById(id);
+        return connectionUser;
+    }));
+    
+    let users = connectionUsers.map((user)=>{
+        return{
+            id: user._id.toHexString(),
+            name: user.mainInfo.name,
+            content: '',
+            time: '',
+            unreadNumber: 0
+        }
+    });
     for (let k = 0; k < messages.length; k++) {
         if (messages[k].senderId.toHexString() === userId) {
-            if (users.filter(item => item.id === messages[k].receiverId.toHexString()).length === 0) {
-                let user = await getUser(messages[k].receiverId.toHexString());
-
-                users.push({
-                    id: messages[k].receiverId.toHexString(),
-                    name: user.mainInfo.name,
-                    content: messages[k].content,
-                    time: messages[k].time,
-                    unreadNumber: 0
+            // if (users.filter(item => item.id === messages[k].receiverId.toHexString()).length === 0) {
+            //     let user = await getUser(messages[k].receiverId.toHexString());
+            //     users.push({
+            //         id: messages[k].receiverId.toHexString(),
+            //         name: user.mainInfo.name,
+            //         content: messages[k].content,
+            //         time: messages[k].time,
+            //         unreadNumber: 0
+            //     })
+            // } else {
+                users.forEach(item => {
+                    item.content = messages[k].content,
+                    item.time = messages[k].time,
+                    item.unreadNumber = 0
                 })
-            } else {
-                users.map(item => {
-                    let newUser = {
-                        ...item,
-                        content: messages[k].content,
-                        time: messages[k].time,
-                        unreadNumber: 0
-                    };
-                    return newUser;
-                })
-            }
+            // }
         } else {
-            if (users.filter(item => item.id === messages[k].senderId.toHexString()).length === 0) {
-                let user = await getUser(messages[k].senderId.toHexString());
+            // if (users.filter(item => item.id === messages[k].senderId.toHexString()).length === 0) {
+            //     let user = await getUser(messages[k].senderId.toHexString());
                 
-                users.push({
-                    id: messages[k].senderId.toHexString(),
-                    name: user.mainInfo.name,
-                    content: messages[k].content,
-                    time: messages[k].time,
-                    unreadNumber: messages[k].isWatched ? 0 : 1
-                })
+            //     users.push({
+            //         id: messages[k].senderId.toHexString(),
+            //         name: user.mainInfo.name,
+            //         content: messages[k].content,
+            //         time: messages[k].time,
+            //         unreadNumber: messages[k].isWatched ? 0 : 1
+            //     })
                 
-            } else {
+            // } else {
                 users.forEach(element => {
                     if(element.id === messages[k].senderId.toHexString() && !messages[k].isWatched){
                         element.content = messages[k].content;
@@ -94,7 +114,7 @@ const getAddress = async (req, res) => {
                         element.unreadNumber += 1;
                     }
                 });
-            }
+            // }
         }
     }
     console.log(users);
@@ -117,7 +137,7 @@ const getMessages = async (req, res) => {
             }
         ]
     });
-    console.log(messages);
+    //console.log(messages);
     for (let k = 1; k < messages.length; k++) {
         if(messages[k].receiverId.toHexString() === userId){
             await Message.findByIdAndUpdate(messages[k]._id.toHexString(),{isWatched: true})
