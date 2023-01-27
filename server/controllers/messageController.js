@@ -71,6 +71,7 @@ const getAddress = async (req, res) => {
         return{
             id: user._id.toHexString(),
             name: user.mainInfo.name,
+            avatar: user.profileImage,
             content: '',
             time: '',
             unreadNumber: 0
